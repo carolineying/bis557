@@ -1,0 +1,18 @@
+Package: bis557
+Title: BIS 557 Assignment
+Version: 0.0.0.9000
+Authors@R: c(person(given = "Shiyao", 
+           family = "Ying",
+           role = c("aut", "cre"),
+           email = "shiyao.ying@yale,edu"))
+Description: BIS 557 hw1. This include a linear model function and a gradient descent function
+License: LGPL (>= 2.1)
+Maintainer: Shiyao Ying <shiyao.ying@yale.edu>
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
+Suggests: 
+    testthat
+Depends: 
+    R (>= 2.10)
