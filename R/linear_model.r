@@ -4,21 +4,22 @@
 #' and fit a linear model and return the coefficients of the model.
 #' @param formula an object of class "formula": describing the model to be fitted. 
 #' @param df a dataframe that containing all the variables in the model.
-#' @param contrast an optional list of contrasts for factor variables.
+#' @param contrasts an optional list of contrasts for factor variables.
+#' @import stats
 #' @examples
-#' library(palmerpenguins)
-#' data(penguins)
-#' form <- body_mass_g~.
-#' linear_model(formula = form,data = penguins)
+#' data(iris)
+#' form <- Sepal.Length ~ Sepal.Width
+#' gradient_descent(formula = form,df = iris)
 
 #' @export
 linear_model <- function(formula, df, contrasts = NULL){
   # create model matrix
-  X <- model.matrix(formula, df, contrasts)
+  df_no_na <- model.frame(formula,df)
+  X <- model.matrix(formula, df_no_na, contrasts)
   
   # get dependent variable
   yname <- as.character(formula)[2]
-  y <- matrix(df[,yname],ncol = 1)
+  y <- matrix(df_no_na[,yname],ncol = 1)
   
   # solve for beta
   beta <- qr.coef(qr(X),y)

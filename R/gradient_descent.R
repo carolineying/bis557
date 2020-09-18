@@ -5,24 +5,25 @@
 #' with reference to https://towardsdatascience.com/linear-regression-using-gradient-descent-97a6c8700931
 #' @param formula an object of class "formula": describing the model to be fitted. 
 #' @param df a dataframe that containing all the variables in the model.
-#' @param contrast an optional list of contrasts for factor variables.
+#' @param contrasts an optional list of contrasts for factor variables.
 #' @param gamma gamma_k, the learning rate
 #' @param iter number of iterations
+#' @import stats
 #' @examples
-#' library(palmerpenguins)
-#' data(penguins)
-#' form <- body_mass_g~.
-#' gradient_descent(formula = form,data = penguins)
+#' data(iris)
+#' form <- Sepal.Length ~ Sepal.Width
+#' gradient_descent(formula = form,df = iris)
 
 #' @export
 gradient_descent <- function(formula, df, contrasts = NULL, gamma = 0.0001, iter = 10^5){
   print(paste("With iteration number of ", iter))
   # create model matrix
-  X <- model.matrix(formula, df, contrasts)
+  df_no_na <- model.frame(formula,df)
+  X <- model.matrix(formula, df_no_na, contrasts)
   
   # get dependent variable
   yname <- as.character(formula)[2]
-  y <- matrix(df[,yname],ncol = 1)
+  y <- matrix(df_no_na[,yname],ncol = 1)
   # initialize beta
   beta <- matrix(1,ncol = 1, nrow = ncol(X))
   

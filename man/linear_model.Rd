@@ -11,7 +11,7 @@ linear_model(formula, df, contrasts = NULL)
 
 \item{df}{a dataframe that containing all the variables in the model.}
 
-\item{contrast}{an optional list of contrasts for factor variables.}
+\item{contrasts}{an optional list of contrasts for factor variables.}
 }
 \description{
 This is a function taking a formula, a dataframe
@@ -19,8 +19,7 @@ and an optional list of contrast for factor variables,
 and fit a linear model and return the coefficients of the model.
 }
 \examples{
-library(palmerpenguins)
-data(penguins)
-form <- body_mass_g~.
-linear_model(formula = form,data = penguins)
+data(iris)
+form <- Sepal.Length ~ Sepal.Width
+gradient_descent(formula = form,df = iris)
 }

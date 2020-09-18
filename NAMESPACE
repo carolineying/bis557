@@ -2,3 +2,4 @@
 
 export(gradient_descent)
 export(linear_model)
+import(stats)

@@ -12,11 +12,11 @@ gradient_descent(formula, df, contrasts = NULL, gamma = 1e-04,
 
 \item{df}{a dataframe that containing all the variables in the model.}
 
+\item{contrasts}{an optional list of contrasts for factor variables.}
+
 \item{gamma}{gamma_k, the learning rate}
 
 \item{iter}{number of iterations}
-
-\item{contrast}{an optional list of contrasts for factor variables.}
 }
 \description{
 This is a function taking a formula, a dataframe
@@ -25,8 +25,7 @@ and using gradient descent to return to coefficients.
 with reference to https://towardsdatascience.com/linear-regression-using-gradient-descent-97a6c8700931
 }
 \examples{
-library(palmerpenguins)
-data(penguins)
-form <- body_mass_g~.
-gradient_descent(formula = form,data = penguins)
+data(iris)
+form <- Sepal.Length ~ Sepal.Width
+gradient_descent(formula = form,df = iris)
 }
