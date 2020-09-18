@@ -4,6 +4,10 @@
   <!-- badges: start -->
   [![Travis build status](https://travis-ci.com/carolineying/bis557.svg?branch=master)](https://travis-ci.com/carolineying/bis557)
   <!-- badges: end -->
+  
+  <!-- badges: start -->
+  [![Coveralls test coverage](https://coveralls.io/repos/github/carolineying/bis557/badge.svg)](https://coveralls.io/r/carolineying/bis557?branch=master)
+  <!-- badges: end -->
 
 The goal of bis557 is for homework for BIS 557. Creating packages and adding functions to it.
 
