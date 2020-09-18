@@ -5,7 +5,7 @@ Authors@R: c(person(given = "Shiyao",
            family = "Ying",
            role = c("aut", "cre"),
            email = "shiyao.ying@yale,edu"))
-Description: BIS 557 hw1. This include a linear model function and a gradient descent function
+Description: BIS 557 hw1. This include a linear model function and a gradient descent function and the corresponding test document.
 License: LGPL (>= 2.1)
 Maintainer: Shiyao Ying <shiyao.ying@yale.edu>
 Encoding: UTF-8
