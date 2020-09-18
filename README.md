@@ -12,7 +12,9 @@ The goal of bis557 is for homework for BIS 557. Creating packages and adding fun
 You can install the released version of bis557 from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
-install.packages("bis557")
+install.packages("devtools")
+devtools::install_github("carolineying/bis557")
+
 ```
 
 ## Example
