@@ -6,3 +6,21 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+0. Create a "homework-2" vignette in your bis557 package.
+1. CASL 2.11 Exercises problem number 5. Include the write up in your homework-2 vignette.
+2. Implement a new function fitting the OLS model using gradient descent that calculates the penalty based on the out-of-sample accuracy. Create test code. How does it compare to the OLS model? Include the comparison in your "homework-2" vignette.
+3. Implement a ridge regression function taking into account colinear (or nearly colinear) regression variables. Create test code for it. Show that it works in your homework-2 vignette.
+4. Implement your own method and testing for optimizing the ridge parameter $\lambda$. Show that it works in your homework-2 vignette.
+5. Consider the LASSO penalty
+$$
+\frac{1}{2n} ||Y - X \beta||_2^2 + \lambda ||\beta||_1.
+$$
+Show that if $|X_j^TY| \leq n \lambda$, then $\widehat \beta^{\text{LASSO}}$ must be zero.
