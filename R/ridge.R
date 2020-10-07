@@ -6,7 +6,7 @@
 #' @param df a dataframe that containing all the variables in the model.
 #' @param contrasts an optional list of contrasts for factor variables.
 #' @param lambda an optional penalty term for ridge regression, default is 0
-#' @import stats
+#' @importFrom stats model.matrix model.frame
 #' @examples
 #' data(iris)
 #' form <- Sepal.Length ~ Sepal.Width

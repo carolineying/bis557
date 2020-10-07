@@ -5,7 +5,7 @@
 #' @param formula an object of class "formula": describing the model to be fitted. 
 #' @param df a dataframe that containing all the variables in the model.
 #' @param contrasts an optional list of contrasts for factor variables.
-#' @import stats
+#' @importFrom stats model.matrix model.frame
 #' @examples
 #' data(iris)
 #' form <- Sepal.Length ~ Sepal.Width

@@ -8,9 +8,7 @@
 #' @param contrasts an optional list of contrasts for factor variables.
 #' @param gamma gamma_k, the learning rate
 #' @param iter number of iterations
-#' @import stats
-#' @import dplyr
-#' @import MASS
+#' @importFrom stats model.matrix model.frame
 #' @examples
 #' data(iris)
 #' form <- Sepal.Length ~ Sepal.Width

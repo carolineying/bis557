@@ -10,11 +10,12 @@
 #' @param lambdas a sequence of lambdas to be selected from, default is seq(-1, 1, by = 0.01)
 #' @param nfold number of folds for the cross validation
 #' 
-#' @import stats
-#' @import foreach
+#' @importFrom  stats model.matrix model.frame
+#' @importFrom  foreach foreach %dopar% %do% 
 #' @import doParallel
 #' @import rsample
 #' @import glmnet
+#' @import dplyr
 #' 
 #' @examples
 #' data(iris)
