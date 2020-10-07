@@ -26,7 +26,8 @@
 best_lambda <- function(formula, df, contrasts = NULL, lambdas = seq(-2,2, by = 0.01), nfold = 10){
   
   yname <- as.character(formula)[2]
-  
+  fold <- NULL
+  lambda <- NULL
   #create folds
   folds <- vfold_cv(df, v = nfold)
   
