@@ -51,11 +51,6 @@ gd_outsample <- function(formula, df, contrasts = NULL, gamma = 0.0001, iter = 1
     }
   }
   
-  # if there is singularity in computing gradient
-  if(qr(X_in)$rank != ncol(X_in)){
-    print("X matrix is not full rank, singularity existing. unable to finish gradient descent")
-    return(linear_model(formula,df,contrasts))
-  }
   
   # solve for beta
   ret <- (list(coefficients = beta))
