@@ -12,9 +12,6 @@ test_that("You gradient_descent() function works in an easy case.", {
   
   expect_equivalent(fit_lm$coefficients, fit_gradient_descent$coefficients,
                     tolerance = 1e-2)
-  print(cbind(fit_gradient_descent$coefficients,fit_lm$coefficients))
-  diff <- mean(abs(-fit_gradient_descent$coefficients+fit_lm$coefficients))
-  print(paste("Average difference in coefficients: ", diff))
 })
 
 test_that("You gradient_descent() function works with contrasts.", {
@@ -28,9 +25,6 @@ test_that("You gradient_descent() function works with contrasts.", {
   
   expect_equivalent(fit_lm$coefficients, fit_gradient_descent$coefficients,
                     tolerance = 1e-2)
-  print(cbind(fit_gradient_descent$coefficients,fit_lm$coefficients))
-  diff <- mean(abs(-fit_gradient_descent$coefficients+fit_lm$coefficients))
-  print(paste("Average difference in coefficients: ", diff))
 })
 
 test_that("Your gradient_descent() function works in a tougher case.", {
@@ -43,7 +37,4 @@ test_that("Your gradient_descent() function works in a tougher case.", {
   
   expect_equivalent(fit_lm$coefficients, fit_gradient_descent$coefficients,
                     tolerance = 1e-2)
-  print(cbind(fit_gradient_descent$coefficients,fit_lm$coefficients))
-  diff <- mean(abs(-fit_gradient_descent$coefficients+fit_lm$coefficients))
-  print(paste("Average difference in coefficients: ", diff))
 })

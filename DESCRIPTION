@@ -14,6 +14,8 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
 Suggests: 
     testthat, covr, knitr, rmarkdown
+Imports:
+  doParallel, dplyr, foreach, glmnet, rsample, MASS
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
