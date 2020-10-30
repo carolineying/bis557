@@ -27,32 +27,19 @@ first_order_GLM <- function(X, y, family, lr = "constant" ,gamma = 0.0001, iter 
   beta <- rep(0, ncol(X))
   
   # performing gradient descent
-  # if adaptive learning rate
-  if (lr == "step") {
-    for(i in 1:iter){ 
-      beta_old <- beta # keep old beta's for comparison
-      eta <- X %*% beta # compute eta
-      Ey <- family$linkinv(eta) # compute expected values for y
-      grad <- t(X) %*% (y - Ey) # compute gradient
-      gamma <- gamma/(1+decay*i) # time-based decay
-      beta <- beta + gamma * grad
-      if(sqrt(crossprod(beta - beta_old)) < tol){
-        break
-      } #check
+  for(i in 1:iter){
+    beta_old <- beta # keep old beta's for comparison
+    eta <- X %*% beta # compute eta
+    Ey <- family$linkinv(eta) # compute expected values for y
+    grad <- t(X) %*% (y - Ey) # compute gradient
+    # if adaptive learning rate
+    if (lr == "step"){
+      gamma <- gamma/(1+decay*i)
     }
-  }
-  # if constant learning rate
-  else if (lr == "constant"){
-    for(i in 1:iter){
-      beta_old <- beta # keep old beta's for comparison
-      eta <- X %*% beta # compute eta
-      Ey <- family$linkinv(eta) # compute expected values for y
-      grad <- t(X) %*% (y - Ey) # compute gradient
-      beta <- beta + gamma * grad
-      if(sqrt(crossprod(beta - beta_old)) < tol){
-        break
-      } #check
-    }
+    beta <- beta + gamma * grad
+    if(sqrt(crossprod(beta - beta_old)) < tol){
+      break
+    } #check
   }
   
   # solve for beta

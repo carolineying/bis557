@@ -4,18 +4,16 @@
 \alias{multi_logreg}
 \title{multi-class logistic regression}
 \usage{
-multi_logreg(X, y, gamma = 1e-04, iter = 35, tol = 1e-10)
+multi_logreg(X, y, iter = 35, tol = 1e-10)
 }
 \arguments{
 \item{X}{numeric data matrix}
 
 \item{y}{response vector}
 
-\item{gamma}{gamma_k, the starting learning rate, default is 0.0001}
+\item{iter}{max number of iterations, default is 35}
 
-\item{iter}{max number of iterations, default is 1e5}
-
-\item{tol}{tolerance, default is 1e-15}
+\item{tol}{tolerance, default is 1e-10}
 }
 \description{
 This is a function taking X, y and fit a multi-class logistic regression

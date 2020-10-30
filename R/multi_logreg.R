@@ -3,9 +3,8 @@
 #' with reference to textbook p130
 #' @param X numeric data matrix
 #' @param y response vector
-#' @param gamma gamma_k, the starting learning rate, default is 0.0001
-#' @param iter max number of iterations, default is 1e5
-#' @param tol tolerance, default is 1e-15
+#' @param iter max number of iterations, default is 35
+#' @param tol tolerance, default is 1e-10
 #' @importFrom stats model.matrix model.frame
 #' @examples
 #' X <- matrix(c(1,2,3,4,5), nrow = 5)
@@ -14,7 +13,7 @@
 #' 
 #' @export
 
-multi_logreg <- function(X, y, gamma = 0.0001, iter = 35, tol = 1e-10){
+multi_logreg <- function(X, y, iter = 35, tol = 1e-10){
   
   # using one-vs-all approach
   y_val <- unique(y)
@@ -29,8 +28,8 @@ multi_logreg <- function(X, y, gamma = 0.0001, iter = 35, tol = 1e-10){
     # initialize beta's
     beta <- rep(0, ncol(X))
     
-    # performing gradient descent
-    for(i in 1:iter){
+    # use Hessian matrix to compute beta's
+    for(i in 1:iter){ 
       beta_old <- beta # keep old beta's for comparison
       p <- 1 / (1+exp(-X %*% beta))
       D <- diag(as.vector(p*(1-p)))
