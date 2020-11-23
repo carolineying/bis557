@@ -1,0 +1,139 @@
+---
+title: "homework-2"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{homework-2}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(bis557)
+library(glmnet)
+```
+
+0. Create a "homework-2" vignette in your bis557 package.
+
+1. CASL 2.11 Exercises problem number 5. Include the write up in your homework-2 vignette.
+
+  Consider the simple regression model with only a scalar x and intercept:
+\[
+y = \beta_0+\beta_1\cdot x
+\]
+  Using the explicit formula for the inverse of a 2-by-2 matrix, write down the least square  estimators for $\hat{\beta_0}, \hat{\beta_1}$.
+
+The sum of squared error is: $\hat{SSE}(\beta_0,\beta_1) = \sum\limits_{i=1}^n (y_i - (\beta_0+\beta_1x_i))^2$
+
+To find the minimum of the MSE, we take the derivative of it:
+\[
+\frac{\delta\text{SSE}}{\delta\hat{\beta_0}} = -2 \sum\limits_{i=1}^n (y_i - \hat{\beta_0}-\hat{\beta_1}x_i) = -2n\bar{y} + 2n\hat{\beta_0}+2n\hat{\beta_1}\bar{x} = 0
+\]
+\[
+\frac{\delta\text{SSE}}{\delta\hat{\beta_1}} = -2 \sum\limits_{i=1}^n x_i(y_i - \hat{\beta_0}-\hat{\beta_1}x_i) = 0
+\]
+
+and we get
+\[
+\sum\limits_{i=1}^n y_i = n\hat{\beta_0} +\hat{\beta_1}\sum\limits_{i=1}^n x_i
+\]
+\[
+\sum\limits_{i=1}^n x_iy_i = \hat{\beta_0}\sum\limits_{i=1}^n x_i+\hat{\beta_1}\sum\limits_{i=1}^n x_i^2
+\]
+
+in matrix form, we get 
+\[
+\begin{pmatrix} 
+\hat{\beta_0} \\
+\hat{\beta_1}
+\end{pmatrix}
+= 
+\begin{pmatrix}
+n & \sum\limits_{i=1}^n x_i \\
+\sum\limits_{i=1}^n x_i & \sum\limits_{i=1}^n x_i^2
+\end{pmatrix}^{-1}
+\begin{pmatrix}
+\sum\limits_{i=1}^n y_i \\
+\sum\limits_{i=1}^n x_iy_i
+\end{pmatrix} =
+\frac{1}{n\sum\limits_{i=1}^n x_i^2-(\sum\limits_{i=1}^n x_i)^2}
+\begin{pmatrix}
+\sum\limits_{i=1}^n x_i^2 & -\sum\limits_{i=1}^n x_i \\
+-\sum\limits_{i=1}^n x_i & n
+\end{pmatrix}
+\begin{pmatrix}
+\sum\limits_{i=1}^n y_i \\
+\sum\limits_{i=1}^n x_iy_i
+\end{pmatrix}
+\]
+
+\[
+\begin{pmatrix} 
+\hat{\beta_0} \\
+\hat{\beta_1}
+\end{pmatrix}
+= 
+\frac{1}{n\sum\limits_{i=1}^n x_i^2-(\sum\limits_{i=1}^n x_i)^2}
+\begin{pmatrix}
+\sum\limits_{i=1}^n x_i^2\sum\limits_{i=1}^n y_i & -\sum\limits_{i=1}^n x_i\sum\limits_{i=1}^n x_iy_i \\
+-\sum\limits_{i=1}^n x_i\sum\limits_{i=1}^n y_i & n\sum\limits_{i=1}^n x_iy_i
+\end{pmatrix}
+\]
+
+2. Implement a new function fitting the OLS model using gradient descent that calculates the penalty based on the out-of-sample accuracy. Create test code. How does it compare to the OLS model? Include the comparison in your "homework-2" vignette.
+```{r}
+data(iris)
+fit_my_os <- gd_outsample(Sepal.Length ~ ., iris)
+fit_lm <- lm(Sepal.Length  ~ ., iris)
+print(cbind(fit_my_os$coefficients, fit_lm$coefficients))
+```
+Using gradient descent with out-of-sample loss on a relatively small sample works, since the coefficients are relatively close. But there is still some difference and more iterations and careful splitting of sample should be considered.
+
+3. Implement a ridge regression function taking into account colinear (or nearly colinear) regression variables. Create test code for it. Show that it works in your homework-2 vignette.
+
+```{r}
+data(iris)
+iris$Sepal.Width_coll <- iris$Sepal.Width
+fit_my_ridge <- ridge(Sepal.Length ~ ., iris, lambda = .01)
+fit_my_ridge$coefficients
+```
+
+4. Implement your own method and testing for optimizing the ridge parameter $\lambda$. Show that it works in your homework-2 vignette.
+
+```{r}
+data(iris)
+cvfit <- cv.glmnet(model.matrix(Sepal.Length ~ ., iris),as.matrix(iris$Sepal.Length), alpha = 0)
+mylambda <- best_lambda(Sepal.Length ~ ., iris, lambdas = cvfit$lambda)
+c(cvfit$lambda.min,mylambda$lambda)
+```
+
+
+5. Consider the LASSO penalty
+$$
+\frac{1}{2n} ||Y - X \beta||_2^2 + \lambda ||\beta||_1.
+$$
+Show that if $|X_j^TY| \leq n \lambda$, then $\widehat \beta_j^{\text{LASSO}}$ must be zero.
+
+$$
+f(\beta) = \frac{1}{2n} ||Y - X \beta||_2^2 + \lambda ||\beta||_1\\
+\frac{\delta f(\beta)}{\delta\beta_l}|_{\beta = \widehat \beta^{\text{LASSO}}} = -\frac{1}{n}\sum\limits_{i=1}^{n}x_{il}(y_i-\hat{y}_l)+\lambda = 0\\
+\text{where } \hat{y}_l =\sum\limits_{i=1}^{n}x_{il}\beta_l\\
+\text{and from class notes, we have } \widehat \beta_j^{\text{LASSO}} = \frac{\frac{1}{n}\sum\limits_{i=1}^{n} x_{ij}(y_i-\hat{y}_l) - \lambda}{1+\lambda}
+$$
+In matrix notation, we have:
+$$
+\widehat \beta_j^{\text{LASSO}} = \frac{\frac{1}{n}X^T_jY - \lambda}{1+\lambda}
+$$
+if $|X_j^TY| \leq n \lambda$, then $- n \lambda \le X^T_jY \le n\lambda$, $-2\lambda \le \frac{1}{n}X^T_jY - \lambda \le 0$ and $1 + \lambda > 0$. The explicit solution for lasso with input matrix X hacing orthonomal columns is sign$(\hat{\beta_j})(\hat{\beta_j}-\lambda)_+$. We must have $\widehat \beta_j^{\text{LASSO}} \ge 0$, and with $\frac{1}{n}X^T_jY - \lambda \le 0$, $\widehat \beta_j^{\text{LASSO}} = 0 $
+
+
+
+
+
+
+
+
+

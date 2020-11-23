@@ -1,0 +1,59 @@
+---
+title: "HW1 Vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{An Example Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r }
+library(bis557)
+```
+Use iris dataset for example
+ 
+## Using linear_model()
+Linear model function take in a dataset, a formula and an option contrast list to return to coefficients of the linear model
+```{r}
+form <- Sepal.Length ~ Sepal.Width
+linear_model(formula = form,df = iris)
+```
+
+## Using gradient_descent()
+Gradient descent function take in a dataset, a formula and an option contrast list to return to coefficients by using gradient descent, number of iterations and learning rate could also be modified
+
+```{r}
+form <- Sepal.Length ~ Sepal.Width
+gradient_descent(formula = form,df = iris)
+```
+
+# HW1 
+1.  Create an R package called `bis557`.
+2.  Implement the `linear_model()` function and document it. It should
+    take a formula, a data frame and a list of constasts for factor
+    variables as input.
+3.  Add a data.frame called `lm_patho` as a data set to the package. Use
+    the `lm_path.csv` for the data. Create a `data-raw` directory in
+    your package (hint: use `usethis::use_data_raw()` and
+    `usethis::use_data()`) to add it to the package. Don’t forget to
+    document it.
+4.  Add the `test-linear-model.r` file to your regression testing (hint:
+    use `usethis::use_testthat()` to create the directory structure).
+    Make sure your implementation passes the tests.
+5.  Implement gradient descent for ordinary least squares.
+6.  Write test code for your gradient descent function.
+7.  Add the package to [Travis-CI](https://travis-ci.com/) and update
+    the `README.md` file so that the badge points to your Travis build
+    (hint: use `usethis::use_travis()`). You will know it is working
+    when the badge is green and gives the message “passing”. Extra hint:
+    sign up for the Github student pack.
+8.  Add code coverage (with either [Coveralls](https://coveralls.io/) or
+    [CodeCov](https://codecov.io/)). Hint use `usethis::use_coverage()`).
+
