@@ -29,4 +29,5 @@ This is a basic example which shows you how to solve a common problem:
 library(bis557)
 ## basic example code
 ```
+#### homework 4 vignette has been uploaded
 
