@@ -4,8 +4,16 @@
 \alias{first_order_GLM}
 \title{first-order solution for the GLM maximum likelihood problem}
 \usage{
-first_order_GLM(X, y, family, lr = "constant", gamma = 1e-04,
-  iter = 1e+05, tol = 1e-15, decay = 0)
+first_order_GLM(
+  X,
+  y,
+  family,
+  lr = "constant",
+  gamma = 1e-04,
+  iter = 1e+05,
+  tol = 1e-15,
+  decay = 0
+)
 }
 \arguments{
 \item{X}{numeric data matrix}

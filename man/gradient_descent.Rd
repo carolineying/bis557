@@ -4,8 +4,7 @@
 \alias{gradient_descent}
 \title{fit a linear model}
 \usage{
-gradient_descent(formula, df, contrasts = NULL, gamma = 1e-04,
-  iter = 10^5)
+gradient_descent(formula, df, contrasts = NULL, gamma = 1e-04, iter = 10^5)
 }
 \arguments{
 \item{formula}{an object of class "formula": describing the model to be fitted.}

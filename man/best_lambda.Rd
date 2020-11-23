@@ -4,8 +4,13 @@
 \alias{best_lambda}
 \title{find the best lambda in ridge regression function}
 \usage{
-best_lambda(formula, df, contrasts = NULL, lambdas = seq(-2, 2, by =
-  0.01), nfold = 10)
+best_lambda(
+  formula,
+  df,
+  contrasts = NULL,
+  lambdas = seq(-2, 2, by = 0.01),
+  nfold = 10
+)
 }
 \arguments{
 \item{formula}{an object of class "formula": describing the model to be fitted.}

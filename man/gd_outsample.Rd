@@ -4,8 +4,7 @@
 \alias{gd_outsample}
 \title{gradient descent using out of sample penalty}
 \usage{
-gd_outsample(formula, df, contrasts = NULL, gamma = 1e-04,
-  iter = 10^6)
+gd_outsample(formula, df, contrasts = NULL, gamma = 1e-04, iter = 10^6)
 }
 \arguments{
 \item{formula}{an object of class "formula": describing the model to be fitted.}

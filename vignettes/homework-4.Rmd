@@ -20,6 +20,7 @@ library(casl)
 library(reticulate)
 library(stats)
 use_condaenv("r-reticulate")
+Sys.which("python")
 ```
 
 1. In Python, implement a numerically-stable ridge regression that takes into account colinear (or nearly colinear) regression variables. Show that it works by comparing it to the output of your R implementation.
