@@ -15,7 +15,9 @@ RoxygenNote: 6.1.1
 Suggests: 
     testthat, covr, knitr, rmarkdown
 Imports:
-  doParallel, dplyr, foreach, glmnet, rsample, MASS, palmerpenguins
+  doParallel, dplyr, foreach, glmnet, rsample, MASS, palmerpenguins, reticulate,casl, devtools
+Remotes:
+  github::statsmaths/casl
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)

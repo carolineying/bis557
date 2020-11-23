@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 library(bis557)
 library(dplyr)
 library(palmerpenguins)
+
 ```
 
 #### 1. CASL 5.8 Exercise number 2

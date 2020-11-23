@@ -9,6 +9,7 @@ library(bis557)
 library(dplyr)
 library(palmerpenguins)
 
+
 ## -----------------------------------------------------------------------------
 X <- matrix(c(1,1,0,1),ncol = 2)
 p <- c(1e-5,0.8)
