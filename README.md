@@ -11,6 +11,9 @@
 
 The goal of bis557 is for homework for BIS 557. Creating packages and adding functions to it.
 
+#### homework 4 vignette has been uploaded
+The pdf file for homework 4 is in the folder doc
+
 ## Installation
 
 You can install the released version of bis557 from [CRAN](https://CRAN.R-project.org) with:
@@ -29,5 +32,5 @@ This is a basic example which shows you how to solve a common problem:
 library(bis557)
 ## basic example code
 ```
-#### homework 4 vignette has been uploaded
+
 

@@ -1,0 +1,121 @@
+---
+title: "homework-3"
+output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{homework-3}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(bis557)
+library(dplyr)
+library(palmerpenguins)
+
+```
+
+#### 1. CASL 5.8 Exercise number 2
+
+#### We mentioned that the Hessian matrix in Equation 5.19 can be more ill-conditioned than the matrix $X^tX$ itself. Generate a matrix X and propabilities p such that the linear Hessian ($X^tX$) is well-conditioned but the logistic variation is not.
+
+The Hessian matrix in 5.19 is $H(l) = X^tDX$ where D is a diagonal matrix with $D_{i,i} = p_i(1-p_i)$. 
+
+According to [https://www.quora.com/What-does-it-mean-to-have-a-poorly-conditioned-Hessian-matrix, and https://www.quora.com/What-is-an-ill-conditioned-matrix], a Hessian matrix is said to be ill-conditioned if it has some large positive eigenvalues and some eigenvalues very close to zero. So it would be hard to invert the matrix. We could use the singular value decomposition to obtain the singular values and compute the conditional number which is the ratio of the largest singular value and smallest singular value. A simple example is shown below:
+
+
+```{r}
+X <- matrix(c(1,1,0,1),ncol = 2)
+p <- c(1e-5,0.8)
+
+D <- diag(as.vector(p))
+H_log <- t(X) %*% D %*% X
+H_lin <- t(X) %*% X
+
+max(svd(H_log)$d)/min(svd(H_log)$d)
+max(svd(H_lin)$d)/min(svd(H_lin)$d)
+```
+The singular values were obtained by the singular value decomposition and since we introduce p, the largest and smallest values are very far from each other. We could see that the conditional number for logistic Hessian is 320002, which is ill-conditioned, while for linear is 6.8, which is well-conditioned. 
+
+
+
+#### 2.Describe and implement a first-order solution for the GLM maximum likelihood problem using only gradient information, avoiding the Hessian matrix. Include both a constant step size along with an adaptive one. You may use a standard adaptive update Momentum, Nesterov, AdaGrad, Adam, or your own. Make sure to explain your approach and compare it’s performance with a constant step size.
+
+In this part, we ask the user to input their X and y's, select to use adaptive(which is time-decay in this case), or constant step size for gradient descent. We initialize beta to zero. If the user select decay, then we update the gamma, which is learning rate, by gamma = gamma/(1+decay * step number). Else, we could keep a constant learning rate either using the default or the input values. We compute the gradient by $X^t(y-Ey)$ and update betas, until we reach the max number of iterations or the update won't bring much change to beta.
+
+Use the code from text book p130 to generate data
+```{r}
+set.seed(100)
+n <- 5000; p <- 3
+beta <- c(-1, 0.2, 0.1)
+X <- cbind(1, matrix(rnorm(n * (p- 1)), ncol = p - 1))
+eta <- X %*% beta
+lambda <- exp(eta)
+y <- rpois(n, lambda = lambda)
+  
+my_glm <- first_order_GLM(X,y,family = poisson(link = "log"), lr = "constant")
+beta_glm <- glm(y ~ X[,-1], family = "poisson")
+  
+cbind(my_glm$coefficients, beta_glm$coefficients, beta)
+```
+We get similar results to the glm function, but both do a decent job but are not very close to true betas.
+
+Using the adaptive step size:
+```{r}
+my_glm_ad <- first_order_GLM(X,y,family = poisson(link = "log"), lr = "step", decay = 0.01)
+cbind(my_glm_ad$coefficients, beta_glm$coefficients, beta)
+```
+Using decay of 0.01, with time based update, [https://en.wikipedia.org/wiki/Learning_rate#Adaptive_learning_rate], we get estimates that is different from the glm function in R. Some estimates are better while some are worse. Some other adaptive step size may do better job than this.
+
+#### 3.Describe and implement a classification model generalizing logistic regression to accommodate more than two classes.
+
+Referring to textbook 5.5, for multiclass model, there is one-vs-one and one-vs-all approach. This model uses the one-vs-all method. We first determine the unique values of y and for each y, we have either 1, representing y is the value, or 0, representing y is not the value, and we fit a logistic model for it. The we use the beta's to compute the probabilities for assignment and pick the largest p-value for each data point and predict the y's
+
+```{r}
+make_model_matrices <- function(formula, df){
+  # create model matrix
+  df_no_na <- model.frame(formula,df)
+  X <- model.matrix(formula, df_no_na)
+  # get dependent variable
+  yname <- as.character(formula)[2]
+  y <- matrix(df_no_na[,yname],ncol = 1)
+  list(X = X, y = y)
+}
+```
+
+
+```{r,message=FALSE}
+data(penguins)
+form <- species ~ bill_length_mm + body_mass_g
+mat <- make_model_matrices(form,penguins)
+X <- mat$X
+y <- mat$y
+peng_spec <- multi_logreg(X,y)
+  
+peng_spec$coefficients
+  
+peng_new <- penguins
+peng_new$is_adelie <- ifelse(peng_new$species == "Adelie", 1, 0)
+peng_new$is_gentoo <- ifelse(peng_new$species == "Gentoo", 1, 0)
+peng_new$is_chinstrap <- ifelse(peng_new$species == "Chinstrap", 1, 0)
+  
+  
+glm(is_adelie ~ bill_length_mm + body_mass_g, data = peng_new, family = binomial)
+glm(is_gentoo ~ bill_length_mm + body_mass_g, data = peng_new, family = binomial)
+glm(is_chinstrap ~ bill_length_mm , data = peng_new, family = binomial,control=glm.control(maxit=15))
+
+```
+Each column of coefficients corresponding to one class of y's. The test code went through comparisons with one-vs-all for each class by comparing the coefficients. We could say that the multi_logreg provided pretty close coefficients as glm.
+
+```{r}
+sum(peng_spec$pred_y != y)/length(y)
+```
+About 4.38% of data was misclassified by the model, which is a pretty decent result.
+
+
