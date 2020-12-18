@@ -11,6 +11,10 @@
 
 The goal of bis557 is for homework for BIS 557. Creating packages and adding functions to it.
 
+#### Final project has been uploaded
+Code and write up are in final project folder
+Data is in data folder
+
 #### homework 4 vignette has been uploaded
 The pdf file for homework 4 is in the folder doc
 
