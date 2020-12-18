@@ -5,7 +5,7 @@ Authors@R: c(person(given = "Shiyao",
            family = "Ying",
            role = c("aut", "cre"),
            email = "shiyao.ying@yale,edu"))
-Description: BIS 557 homework package. Homework-1 include a linear model function and a gradient descent function and the corresponding test document.
+Description: BIS 557 homework and final project package. 
 License: LGPL (>= 2.1)
 Maintainer: Shiyao Ying <shiyao.ying@yale.edu>
 Encoding: UTF-8

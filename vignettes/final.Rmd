@@ -1,0 +1,463 @@
+---
+title: "Final Project"
+output: pdf_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(bis557)
+library(reticulate)
+library(keras)
+```
+
+
+
+## Weight Regularization in CNN with Sign language MNIST data
+
+```{r}
+data("sign_mnist_test")
+data("sign_mnist_train")
+```
+
+```{r}
+x_train <- sign_mnist_train[,-1]
+x_test <- sign_mnist_test[,-1]
+y_train <- sign_mnist_train$label
+y_test <- sign_mnist_test$label
+x_train <- x_train/255
+x_test <- x_test/255
+```
+
+```{r}
+x_train <- data.matrix(x_train)
+x_train <- array_reshape(x_train, c(nrow(x_train), 28,28, 1))
+x_test <- data.matrix(x_test)
+x_test <- array_reshape(x_test, c(nrow(x_test), 28,28, 1))
+input_shape <- c(28,28,1)
+
+y_train <- to_categorical(y_train, 26)
+y_test <- to_categorical(y_test, 26)
+```
+
+
+
+```{r}
+batch_size <- 32
+epochs <- 5
+
+model <- keras_model_sequential() %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',
+                input_shape = input_shape) %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu') %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_flatten() %>% 
+  layer_dense(units = 512, activation = 'relu') %>% 
+  layer_dense(units = 26, activation = 'softmax')
+
+model %>% compile(
+  loss = loss_categorical_crossentropy,
+  optimizer = optimizer_adam(),
+  metrics = c('accuracy')
+)
+
+model %>% fit(
+  x_train, y_train,
+  batch_size = batch_size,
+  epochs = epochs,
+  validation_split = 0.2
+)
+```
+
+
+```{r}
+scores <- model %>% evaluate(
+  x_test, y_test, verbose = 2
+)
+
+```
+Kernel l1
+```{r}
+l1 <-  c(1e-5,1e-4 ,1e-3,1e-2,1e-1)
+accuracy_l1_kernel <- NULL
+loss <- NULL
+for (i in l1){
+  model_l1 <- keras_model_sequential() %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu', input_shape = input_shape,  
+                kernel_regularizer=regularizer_l1(i)) %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',  
+                kernel_regularizer=regularizer_l1(i)) %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_flatten() %>% 
+  layer_dense(units = 512, activation = 'relu',  
+              kernel_regularizer=regularizer_l1(i)) %>% 
+  layer_dense(units = 26, activation = 'softmax', 
+              kernel_regularizer=regularizer_l1(i))
+
+model_l1 %>% compile(
+  loss = loss_categorical_crossentropy,
+  optimizer = optimizer_adam(),
+  metrics = c('accuracy')
+)
+
+model_l1 %>% fit(
+  x_train, y_train,
+  batch_size = batch_size,
+  epochs = epochs,
+  validation_split = 0.2
+)
+
+scores_l1 <- model_l1 %>% evaluate(
+  x_test, y_test, verbose = 2
+)
+
+accuracy_l1_kernel <- c(accuracy_l1_kernel, scores_l1$accuracy)
+loss <- c(loss,scores_l1$loss)
+}
+
+```
+```{r}
+accuracy_l1_kernel
+```
+
+bias l1
+```{r}
+accuracy_l1_bias <- NULL
+loss <- NULL
+for (i in l1){
+  model_l1 <- keras_model_sequential() %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu', input_shape = input_shape,  
+                bias_regularizer=regularizer_l1(i)) %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',  
+                bias_regularizer=regularizer_l1(i)) %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_flatten() %>% 
+  layer_dense(units = 512, activation = 'relu',  
+              bias_regularizer=regularizer_l1(i)) %>% 
+  layer_dense(units = 26, activation = 'softmax', 
+              bias_regularizer=regularizer_l1(i))
+
+  model_l1 %>% compile(
+    loss = loss_categorical_crossentropy,
+    optimizer = optimizer_adam(),
+    metrics = c('accuracy')
+  )
+  
+  model_l1 %>% fit(
+    x_train, y_train,
+    batch_size = batch_size,
+    epochs = epochs,
+    validation_split = 0.2
+  )
+  
+  scores_l1 <- model_l1 %>% evaluate(
+    x_test, y_test, verbose = 2
+  )
+  
+  accuracy_l1_bias <- c(accuracy_l1_bias, scores_l1$accuracy)
+  loss <- c(loss,scores_l1$loss)
+}
+```
+
+
+```{r}
+accuracy_l1_activity <- NULL
+loss <- NULL
+for (i in l1){
+  model_l1 <- keras_model_sequential() %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu', input_shape = input_shape,  
+                activity_regularizer=regularizer_l1(i)) %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',  
+                activity_regularizer=regularizer_l1(i)) %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_flatten() %>% 
+  layer_dense(units = 512, activation = 'relu',  
+              activity_regularizer=regularizer_l1(i)) %>% 
+  layer_dense(units = 26, activation = 'softmax', 
+              activity_regularizer=regularizer_l1(i))
+
+model_l1 %>% compile(
+  loss = loss_categorical_crossentropy,
+  optimizer = optimizer_adam(),
+  metrics = c('accuracy')
+)
+
+model_l1 %>% fit(
+  x_train, y_train,
+  batch_size = batch_size,
+  epochs = epochs,
+  validation_split = 0.2
+)
+
+scores_l1 <- model_l1 %>% evaluate(
+  x_test, y_test, verbose = 2
+)
+
+accuracy_l1_activity <- c(accuracy_l1_activity, scores_l1$accuracy)
+loss <- c(loss,scores_l1$loss)
+}
+```
+
+
+```{r}
+l2 <-  c(1e-5,1e-4 ,1e-3,1e-2,1e-1)
+accuracy_l2_kernel <- NULL
+loss <- NULL
+for (i in l2){
+  model_l2 <- keras_model_sequential() %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu', input_shape = input_shape,  
+                kernel_regularizer=regularizer_l2(i)) %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',  
+                kernel_regularizer=regularizer_l2(i)) %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_flatten() %>% 
+  layer_dense(units = 512, activation = 'relu',  
+              kernel_regularizer=regularizer_l2(i)) %>% 
+  layer_dense(units = 26, activation = 'softmax', 
+              kernel_regularizer=regularizer_l2(i))
+
+  model_l2 %>% compile(
+    loss = loss_categorical_crossentropy,
+    optimizer = optimizer_adam(),
+    metrics = c('accuracy')
+  )
+  
+  model_l2 %>% fit(
+    x_train, y_train,
+    batch_size = batch_size,
+    epochs = epochs,
+    validation_split = 0.2
+  )
+  
+  scores_l2 <- model_l2 %>% evaluate(
+    x_test, y_test, verbose = 2
+  )
+  
+  accuracy_l2_kernel <- c(accuracy_l2_kernel, scores_l2$accuracy)
+  loss <- c(loss,scores_l2$loss)
+}
+
+```
+
+```{r}
+accuracy_l2_bias <- NULL
+loss <- NULL
+for (i in l2){
+  model_l2 <- keras_model_sequential() %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu', input_shape = input_shape,  
+                bias_regularizer=regularizer_l2(i)) %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',  
+                bias_regularizer=regularizer_l2(i)) %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_flatten() %>% 
+  layer_dense(units = 512, activation = 'relu',  
+              bias_regularizer=regularizer_l2(i)) %>% 
+  layer_dense(units = 26, activation = 'softmax', 
+              bias_regularizer=regularizer_l2(i))
+
+  model_l2 %>% compile(
+    loss = loss_categorical_crossentropy,
+    optimizer = optimizer_adam(),
+    metrics = c('accuracy')
+  )
+  
+  model_l2 %>% fit(
+    x_train, y_train,
+    batch_size = batch_size,
+    epochs = epochs,
+    validation_split = 0.2
+  )
+  
+  scores_l2 <- model_l2 %>% evaluate(
+    x_test, y_test, verbose = 2
+  )
+  
+  accuracy_l2_bias <- c(accuracy_l2_bias, scores_l2$accuracy)
+  loss <- c(loss,scores_l2$loss)
+}
+```
+
+```{r}
+accuracy_l2_activity <- NULL
+loss <- NULL
+for (i in l2){
+  model_l2 <- keras_model_sequential() %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu', input_shape = input_shape,  
+                activity_regularizer=regularizer_l2(i)) %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',  
+                activity_regularizer=regularizer_l2(i)) %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_flatten() %>% 
+  layer_dense(units = 512, activation = 'relu',  
+              activity_regularizer=regularizer_l2(i)) %>% 
+  layer_dense(units = 26, activation = 'softmax', 
+              activity_regularizer=regularizer_l2(i))
+
+model_l2 %>% compile(
+  loss = loss_categorical_crossentropy,
+  optimizer = optimizer_adam(),
+  metrics = c('accuracy')
+)
+
+model_l2 %>% fit(
+  x_train, y_train,
+  batch_size = batch_size,
+  epochs = epochs,
+  validation_split = 0.2
+)
+
+scores_l2 <- model_l2 %>% evaluate(
+  x_test, y_test, verbose = 2
+)
+
+accuracy_l2_activity <- c(accuracy_l2_activity, scores_l2$accuracy)
+loss <- c(loss,scores_l2$loss)
+}
+```
+
+l1l2 kernel
+```{r}
+l1 <- c(1e-5,1e-4 ,1e-3,1e-2,1e-1)
+l2 <- c(1e-5,1e-4 ,1e-3,1e-2,1e-1)
+accuracy_l1l2_kernel <- NULL
+l1seq <- NULL
+l2seq <- NULL
+for (i in l1){
+  for (j in l2){
+    model_l1l2 <- keras_model_sequential() %>%
+    layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu', input_shape = input_shape,  
+                  kernel_regularizer=regularizer_l1_l2(l1 = i, l2 = j)) %>%
+    layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+    layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',  
+                  kernel_regularizer=regularizer_l1_l2(l1 = i, l2 = j)) %>% 
+    layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+    layer_flatten() %>% 
+    layer_dense(units = 512, activation = 'relu',  
+                kernel_regularizer=regularizer_l1_l2(l1 = i, l2 = j)) %>% 
+    layer_dense(units = 26, activation = 'softmax', 
+                kernel_regularizer=regularizer_l1_l2(l1 = i, l2 = j))
+  
+    model_l1l2 %>% compile(
+      loss = loss_categorical_crossentropy,
+      optimizer = optimizer_adam(),
+      metrics = c('accuracy')
+    )
+    
+    model_l1l2 %>% fit(
+      x_train, y_train,
+      batch_size = batch_size,
+      epochs = epochs,
+      validation_split = 0.2)
+    
+    scores_l1l2 <- model_l1l2 %>% evaluate(
+      x_test, y_test, verbose = 2
+    )
+    
+    accuracy_l1l2_kernel <- c(accuracy_l1l2_kernel, scores_l1l2$accuracy)
+    l1seq <- c(l1seq,i)
+    l2seq <- c(l2seq,j)
+    loss <- c(loss,scores_l1l2$loss)
+    }
+}
+
+```
+l1l2 bias
+```{r}
+accuracy_l1l2_bias <- NULL
+l1seq <- NULL
+l2seq <- NULL
+for (i in l1){
+  for (j in l2){
+    model_l1l2 <- keras_model_sequential() %>%
+    layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu', input_shape = input_shape,  
+                  bias_regularizer=regularizer_l1_l2(l1 = i, l2 = j)) %>%
+    layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+    layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',  
+                  bias_regularizer=regularizer_l1_l2(l1 = i, l2 = j)) %>% 
+    layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+    layer_flatten() %>% 
+    layer_dense(units = 512, activation = 'relu',  
+                bias_regularizer=regularizer_l1_l2(l1 = i, l2 = j)) %>% 
+    layer_dense(units = 26, activation = 'softmax', 
+                bias_regularizer=regularizer_l1_l2(l1 = i, l2 = j))
+  
+    model_l1l2 %>% compile(
+      loss = loss_categorical_crossentropy,
+      optimizer = optimizer_adam(),
+      metrics = c('accuracy')
+    )
+    
+    model_l1l2 %>% fit(
+      x_train, y_train,
+      batch_size = batch_size,
+      epochs = epochs,
+      validation_split = 0.2)
+    
+    scores_l1l2 <- model_l1l2 %>% evaluate(
+      x_test, y_test, verbose = 2
+    )
+    
+    accuracy_l1l2_kernel <- c(accuracy_l1l2_kernel, scores_l1l2$accuracy)
+    l1seq <- c(l1seq,i)
+    l2seq <- c(l2seq,j)
+    }
+}
+```
+
+l1l2_activity
+```{r}
+accuracy_l1l2_activity <- NULL
+l1seq <- NULL
+l2seq <- NULL
+loss <- NULL
+for (i in l1){
+  for (j in l2){
+    model_l1l2 <- keras_model_sequential() %>%
+    layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu', input_shape = input_shape,  
+                  activity_regularizer=regularizer_l1_l2(l1 = i, l2 = j)) %>%
+    layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+    layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',  
+                  activity_regularizer=regularizer_l1_l2(l1 = i, l2 = j)) %>% 
+    layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+    layer_flatten() %>% 
+    layer_dense(units = 512, activation = 'relu',  
+                activity_regularizer=regularizer_l1_l2(l1 = i, l2 = j)) %>% 
+    layer_dense(units = 26, activation = 'softmax', 
+                activity_regularizer=regularizer_l1_l2(l1 = i, l2 = j))
+  
+    model_l1l2 %>% compile(
+      loss = loss_categorical_crossentropy,
+      optimizer = optimizer_adam(),
+      metrics = c('accuracy')
+    )
+    
+    model_l1l2 %>% fit(
+      x_train, y_train,
+      batch_size = batch_size,
+      epochs = epochs,
+      validation_split = 0.2)
+    
+   scores_l1l2 <- model_l1l2 %>% evaluate(
+      x_test, y_test, verbose = 2
+    )
+    
+    accuracy_l1l2_activity <- c(accuracy_l1l2_activity, scores_l1l2$accuracy)
+    l1seq <- c(l1seq,i)
+    l2seq <- c(l2seq,j)
+    loss <- c(loss,scores_l1l2$loss)
+    }
+}
+```
+
